@@ -1,0 +1,23 @@
+# 考察知识点：子查询、内连接（inner join 、join），左连接（left join），多表连接
+1、查询"01"课程比"02"课程成绩高的学生的信息及课程分数
+SELECT a.*, b.s_score as score01, c.s_score as score02
+FROM student a
+INNER JOIN score b ON a.s_id = b.s_id AND b.c_id = '01' #内连接，通过学号连接，指定01
+LEFT JOIN score c ON a.s_id = c.s_id AND c.c_id = '02' OR c.c_id IS NULL #指定02，或者c中的c_id 直接不存在；为null的条件不存在，因为左连接中会直接排除c表中不存在的数据，包含null
+WHERE b.s_score > c.s_score;
+
+2、查询"01"课程比"02"课程成绩低的学生的信息及课程分数
+SELECT a.*, b.s_score as score01, c.s_score as score02
+FROM student a
+inner join score b on a.s_id = b.s_id and b.c_id = '01'
+left join score c on a.s_id = c.s_id and c.c_id = '02' or c.c_id is NULL
+where b.s_score < c.s_score；
+
+3、查询平均成绩大于等于60分的同学的学生编号和学生姓名和平均成绩
+#round 用于对数值四舍五入，方法 round(123.45,2)四舍五入结果为：123
+#group by 
+select b.s_id,b.s_name,ROUND(AVG(a.s_score),2) as avg_score 
+from student b 
+join score a on b.s_id = a.s_id
+GROUP BY b.s_id,b.s_name 
+HAVING ROUND(AVG(a.s_score),2)>=60

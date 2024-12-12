@@ -8,3 +8,64 @@ where s_id not in (
     having count(*) = (
       select count(*)
       from course) )
+
+12、查询至少有一门课与学号为"01"的同学所学相同的同学的信息 
+select *   #3、求出学生信息
+from Student
+where s_id in (
+  select distinct s_id   #2、找出满足课程在01学生课程中的全部学生，学号去重，同时将01自己排除
+  from Score
+  where c_id in (
+    select c_id
+    from Score
+    where s_id=01)  # 1、找出学号01同学的全部课程
+  and s_id != 01);
+
+13、查询和"01"号的同学学习的课程完全相同的其他同学的信息
+select *
+from student
+where s_id in (
+	 select s_id
+	 from score s
+	 inner join (
+		select c_id from score where s_id = 1
+	 ) t1
+	 on s.c_id = t1.c_id
+	 where s_id != 1
+	 group by s_id having count(*) = (
+		select count(*) from score where s_id = 1
+	 )
+);
+
+14、查询没学过"张三"老师讲授的任一门课程的学生姓名 
+#老师姓名 张三，老师姓名对应的id， id对应的课程id，课程id对应的学生编号，学生编号对应的学生姓名
+select s_name  #学生id 找到对应的 学生姓名
+from  student
+where s_id not in(
+  select distinct(s_id)  #课程id 找到对应的 学生id
+  from score 
+  where c_id = (
+    select c_id  #老师id 找到课程id
+    from course
+    where t_id = (
+      select t_id  #老师姓名找到老师id
+      from teacher
+      where t_name = "张三")))
+
+15、查询两门及其以上不及格课程的同学的学号，姓名及其平均成绩
+select 
+  s.s_id,
+  s.s_name,
+  round(avg(s_score), 2) as avg_score
+from student s
+left join score b 
+on s.s_id = b.s_id
+and b.s_score < 60
+group by s.s_id
+having count(b.c_id) >= 2
+
+
+
+
+
+

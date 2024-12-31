@@ -1,6 +1,7 @@
 # 考察知识点：子查询、内连接（inner join 、join），左连接（left join），多表连接
 1、查询"01"课程比"02"课程成绩高的学生的信息及课程分数
-```python
+
+```mysql
 SELECT a.*, b.s_score as score01, c.s_score as score02
 FROM student a
 INNER JOIN score b ON a.s_id = b.s_id AND b.c_id = '01' #内连接，通过学号连接，指定01
